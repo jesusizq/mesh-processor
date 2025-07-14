@@ -3,7 +3,7 @@ add_executable(${PROJECT_NAME} ${APP_SOURCES})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     MeshProcessorApp
-    ApiResponse
+    spdlog::spdlog
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)

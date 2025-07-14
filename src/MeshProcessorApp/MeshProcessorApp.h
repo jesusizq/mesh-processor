@@ -1,29 +1,26 @@
-#ifndef MESHPROCESSORAPP_H
-#define MESHPROCESSORAPP_H
+#ifndef MESH_PROCESSOR_APP_H
+#define MESH_PROCESSOR_APP_H
 
-#include "ApiResponse.h"
+#include "IBaseController.h"
 #include "httplib.h"
-#include "spdlog/spdlog.h"
+#include <memory>
+#include <vector>
 
 namespace meshprocessor {
 
 class MeshProcessorApp {
 public:
-  MeshProcessorApp() = default;
+  MeshProcessorApp();
   void run();
 
 private:
-  int m_port = 8080;
+  void setupControllers();
+  void registerRoutes();
 
-  void setupRoutes(httplib::Server &svr);
-
-  void setContentAsJson(httplib::Response &res, ApiResponse &apiRes) {
-    res.set_content(apiRes.toJson().dump(), "application/json");
-  }
-
-  void triangulate(const httplib::Request &req, httplib::Response &res);
+  httplib::Server m_server;
+  std::vector<std::shared_ptr<controllers::IBaseController>> m_controllers;
 };
 
 } // namespace meshprocessor
 
-#endif // MESHPROCESSORAPP_H
+#endif // MESH_PROCESSOR_APP_H
