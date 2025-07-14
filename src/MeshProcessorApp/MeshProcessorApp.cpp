@@ -5,20 +5,10 @@
 
 namespace meshprocessor {
 
-MeshProcessorApp::MeshProcessorApp() {
-  setupControllers();
+MeshProcessorApp::MeshProcessorApp(
+    std::vector<std::shared_ptr<controllers::IBaseController>> controllers)
+    : m_controllers{std::move(controllers)} {
   registerRoutes();
-}
-
-void MeshProcessorApp::setupControllers() {
-  // Initialize services
-  auto triangulationService{std::make_shared<services::TriangulationService>()};
-
-  // Initialize controllers
-  auto triangulationController{
-      std::make_shared<controllers::TriangulationController>(
-          triangulationService)};
-  m_controllers.push_back(triangulationController);
 }
 
 void MeshProcessorApp::registerRoutes() {
@@ -29,7 +19,7 @@ void MeshProcessorApp::registerRoutes() {
 
 void MeshProcessorApp::run() {
   constexpr int port{8080};
-  spdlog::info("Server starting on port {}", port);
+  spdlog::info("MeshProcessorApp: Server starting on port {}", port);
   m_server.listen("0.0.0.0", port);
 }
 

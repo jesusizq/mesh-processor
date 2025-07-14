@@ -8,12 +8,12 @@ namespace utils {
 
 class JsonUtils {
 public:
-  static triangulation::Polygon json_to_polygon(const nlohmann::json &jsonData);
+  static triangulation::Polygon jsonToPolygon(const nlohmann::json &jsonData);
 
-  static nlohmann::json polygon_to_json(const triangulation::Polygon &polygon);
+  static nlohmann::json polygonToJson(const triangulation::Polygon &polygon);
 
   static nlohmann::json
-  triangles_to_json(const triangulation::Triangles &triangles);
+  trianglesToJson(const triangulation::Triangles &triangles);
 };
 
 } // namespace utils

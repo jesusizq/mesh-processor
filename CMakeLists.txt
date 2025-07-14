@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
 
+# This ensures that downloaded dependencies are correctly rebuild if their URLs change
+cmake_policy(SET CMP0135 NEW)
+
 if(NOT PROJECT_VERSION)
   set(PROJECT_VERSION 0.0.1)
 endif()
@@ -22,6 +25,19 @@ option(BUILD_TESTING "Enable test builds" OFF)
 add_subdirectory(libs)
 add_subdirectory(src)
 add_subdirectory(app)
+
+if(BUILD_TESTING)
+  enable_testing()
+  include(FetchContent)
+  FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+  )
+  FetchContent_MakeAvailable(googletest)
+  include(GoogleTest)
+  add_subdirectory(test)
+endif()
+
 
 target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog httplib::httplib nlohmann_json libtriangulation)
 

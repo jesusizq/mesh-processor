@@ -10,11 +10,11 @@ namespace meshprocessor {
 
 class MeshProcessorApp {
 public:
-  MeshProcessorApp();
+  explicit MeshProcessorApp(
+      std::vector<std::shared_ptr<controllers::IBaseController>> controllers);
   void run();
 
 private:
-  void setupControllers();
   void registerRoutes();
 
   httplib::Server m_server;

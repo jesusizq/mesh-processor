@@ -8,8 +8,9 @@ namespace services {
 class TriangulationService {
 public:
   TriangulationService() = default;
+  virtual ~TriangulationService() = default;
 
-  triangulation::Triangles
+  virtual triangulation::Triangles
   triangulate(const triangulation::Polygon &polygon) const;
 };
 

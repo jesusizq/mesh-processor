@@ -14,7 +14,6 @@ public:
 
   void registerRoutes(httplib::Server &server) override;
 
-private:
   void triangulate(const httplib::Request &req, httplib::Response &res);
 
 private:

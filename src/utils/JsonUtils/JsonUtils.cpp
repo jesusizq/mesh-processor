@@ -1,23 +1,38 @@
 #include "JsonUtils.h"
+#include "spdlog/spdlog.h"
 
 namespace utils {
 
 triangulation::Polygon
-JsonUtils::json_to_polygon(const nlohmann::json &jsonData) {
+JsonUtils::jsonToPolygon(const nlohmann::json &jsonData) {
   triangulation::Polygon polygon;
-  polygon.reserve(jsonData.size());
-  for (const auto &point : jsonData) {
-    polygon.emplace_back(
-        triangulation::Point{point[0].get<double>(), point[1].get<double>()});
+
+  if (jsonData.is_array()) {
+    polygon.reserve(jsonData.size());
+    for (const auto &item : jsonData) {
+      if (item.is_array() && item.size() == 2 && item[0].is_number() &&
+          item[1].is_number()) {
+        polygon.emplace_back(
+            triangulation::Point{item[0].get<double>(), item[1].get<double>()});
+      } else {
+        const auto errMsg{"Invalid point format in JSON array"};
+        spdlog::error(errMsg);
+        throw std::invalid_argument(errMsg);
+      }
+    }
+  } else {
+    const auto errMsg{"JSON data is not an array"};
+    spdlog::error(errMsg);
+    throw std::invalid_argument(errMsg);
   }
   return polygon;
 }
 
 nlohmann::json
-JsonUtils::triangles_to_json(const triangulation::Triangles &triangles) {
-  auto jsonTriangles = nlohmann::json::array();
+JsonUtils::trianglesToJson(const triangulation::Triangles &triangles) {
+  nlohmann::json jsonTriangles;
   for (const auto &triangle : triangles) {
-    auto jsonTriangle = nlohmann::json::array();
+    nlohmann::json jsonTriangle;
     for (const auto &point : triangle) {
       jsonTriangle.push_back(
           {triangulation::x(point), triangulation::y(point)});
@@ -27,8 +42,7 @@ JsonUtils::triangles_to_json(const triangulation::Triangles &triangles) {
   return jsonTriangles;
 }
 
-nlohmann::json
-JsonUtils::polygon_to_json(const triangulation::Polygon &polygon) {
+nlohmann::json JsonUtils::polygonToJson(const triangulation::Polygon &polygon) {
   nlohmann::json jsonPolygon;
   for (const auto &point : polygon) {
     jsonPolygon.push_back({triangulation::x(point), triangulation::y(point)});

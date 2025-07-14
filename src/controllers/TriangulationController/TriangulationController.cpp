@@ -20,14 +20,16 @@ void TriangulationController::registerRoutes(httplib::Server &server) {
 void TriangulationController::triangulate(const httplib::Request &req,
                                           httplib::Response &res) {
   try {
-    nlohmann::json input_json = nlohmann::json::parse(req.body);
+    spdlog::info("Received request to triangulate");
+    nlohmann::json inputJson = nlohmann::json::parse(req.body);
 
-    const auto polygon{utils::JsonUtils::json_to_polygon(input_json)};
+    const auto polygon{utils::JsonUtils::jsonToPolygon(inputJson)};
     const auto triangles{m_triangulationService->triangulate(polygon)};
 
-    nlohmann::json output_json = utils::JsonUtils::triangles_to_json(triangles);
+    nlohmann::json outputJson = utils::JsonUtils::trianglesToJson(triangles);
 
-    utils::ResponseHandler::sendJson(res, output_json);
+    spdlog::info("Triangulation was successful");
+    utils::ResponseHandler::sendJson(res, outputJson);
 
   } catch (const nlohmann::json::parse_error &e) {
     const auto errMsg{"Invalid JSON format: " + std::string(e.what())};

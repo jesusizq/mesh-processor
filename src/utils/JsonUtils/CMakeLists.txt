@@ -10,4 +10,5 @@ target_include_directories(JsonUtils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(JsonUtils PUBLIC 
     nlohmann_json
     libtriangulation
+    spdlog::spdlog
 ) 
