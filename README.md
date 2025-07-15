@@ -1,8 +1,8 @@
 # Mesh Processor
 
-The `mesh-processor` is a high-performance C++ microservice designed to handle heavy geometric processing tasks. Currently, it focuses on triangulating 2D polygons, with a scalable architecture to support additional mesh-related operations in the future.
+The `mesh-processor` is a high-performance C++ microservice designed to handle heavy geometric processing tasks. Currently, it focuses on triangulating 2D polygons using the ear clipping algorithm, with a scalable architecture to support additional mesh-related operations in the future.
 
-It exposes a simple HTTP API to receive polygon data and return the triangulated mesh.
+It exposes a simple HTTP API to receive polygon data and return triangulated indices that can be used for wireframe visualization or mesh rendering.
 
 ## Prerequisites
 
@@ -21,13 +21,30 @@ It exposes a simple HTTP API to receive polygon data and return the triangulated
 
 The `mesh-processor` follows a layered architecture for maintainability and scalability:
 
-- **Controllers**: Handle HTTP requests and responses (e.g., `TriangulationController`).
+- **Controllers**: Handle HTTP requests and responses (e.g., `TriangulationController`, `HealthController`).
 - **Services**: Encapsulate business logic (e.g., `TriangulationService`).
 - **Utilities**: Provide common functionality like JSON parsing (`JsonUtils`) and response handling (`ResponseHandler`).
 - **Application**: The `MeshProcessorApp` wires everything together and runs the HTTP server.
 - **External Libraries**: Includes `libtriangulation` (for core geometry operations), `cpp-httplib` (HTTP server), `nlohmann/json` (JSON parsing), and `spdlog` (logging).
 
 ## Build and Run
+
+### Docker Build (Recommended)
+
+The mesh-processor is designed to run as a containerized service:
+
+```bash
+# From project root
+make up                          # Start all services
+# or
+make build-mesh-processor       # Build only mesh-processor
+make mesh-processor-up          # Start only mesh-processor
+
+# Direct Docker commands
+docker compose up mesh-processor
+```
+
+The service will be available at `http://localhost:8080`.
 
 ### Local Development
 
@@ -57,7 +74,11 @@ The `mesh-processor` follows a layered architecture for maintainability and scal
 
    The server will start on port 8080 by default.
 
-4. **Run Tests (Optional):**
+   ```bash
+   mkdir build && cd build
+   cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+   cmake --build . -j$(nproc)
+   ```
 
    If tests are included, you can run them after building:
 
@@ -66,6 +87,25 @@ The `mesh-processor` follows a layered architecture for maintainability and scal
    ```
 
 ## API Documentation
+
+### `GET /health`
+
+Health check endpoint for monitoring service status.
+
+**Response (200 OK):**
+
+Returns service health information in JSON format.
+
+_Example:_
+
+```json
+{
+  "service": "mesh-processor",
+  "status": "healthy",
+  "timestamp": 1752585972,
+  "version": "1.0.0"
+}
+```
 
 ### `POST /triangulate`
 
@@ -87,19 +127,15 @@ _Example:_
 
 **Success Response (200 OK):**
 
-The response is a JSON array of triangles. Each triangle is an array of 3 points, and each point is an array of two numbers `[x, y]`.
+The response is a JSON array of triangulated indices. Each set of 3 consecutive indices represents one triangle, where each index refers to a point in the original input array.
 
 _Example:_
 
 ```json
-[
-  [
-    [100, 100],
-    [200, 100],
-    [150, 200]
-  ]
-]
+[0, 1, 2]
 ```
+
+This indicates that the triangle is formed by connecting the 1st, 2nd, and 3rd points from the input array (using 0-based indexing).
 
 **Error Responses:**
 
