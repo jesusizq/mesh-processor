@@ -9,6 +9,19 @@ class IBaseController {
 public:
   virtual ~IBaseController() = default;
   virtual void registerRoutes(httplib::Server &server) = 0;
+
+protected:
+  // Shared CORS handler for OPTIONS requests
+  static void setupCorsOptions(httplib::Server &server,
+                               const std::string &route) {
+    server.Options(
+        route, [](const httplib::Request &req, httplib::Response &res) {
+          res.set_header("Access-Control-Allow-Origin", "*");
+          res.set_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+          res.set_header("Access-Control-Allow-Headers", "Content-Type");
+          res.status = 200;
+        });
+  }
 };
 
 } // namespace controllers

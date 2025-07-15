@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 
 # This ensures that downloaded dependencies are correctly rebuild if their URLs change
-cmake_policy(SET CMP0135 NEW)
+if(POLICY CMP0135)
+  cmake_policy(SET CMP0135 NEW)
+endif()
 
 if(NOT PROJECT_VERSION)
   set(PROJECT_VERSION 0.0.1)

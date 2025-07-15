@@ -1,3 +1,4 @@
+#include "HealthController.h"
 #include "MeshProcessorApp.h"
 #include "TriangulationController.h"
 #include "TriangulationService.h"
@@ -18,10 +19,12 @@ int main() {
   auto triangulationController =
       std::make_shared<controllers::TriangulationController>(
           triangulationService);
+  auto healthController = std::make_shared<controllers::HealthController>();
 
   // Gather controllers
   std::vector<std::shared_ptr<controllers::IBaseController>> controllers;
   controllers.push_back(triangulationController);
+  controllers.push_back(healthController);
 
   // Run the app
   meshprocessor::MeshProcessorApp app(controllers);

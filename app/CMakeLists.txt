@@ -3,6 +3,7 @@ add_executable(${PROJECT_NAME} ${APP_SOURCES})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     MeshProcessorApp
+    HealthController
     spdlog::spdlog
 )
 
