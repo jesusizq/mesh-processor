@@ -38,16 +38,12 @@ protected:
 };
 
 TEST_F(HealthControllerTest, HealthEndpointReturnsValidResponse) {
-  // Note: This is a basic structural test. In a real scenario, you might want
-  // to test against an actual running server or use mocking frameworks.
-
   // Test that the controller can be instantiated and routes can be registered
   EXPECT_NE(healthController, nullptr);
 
-  // You could extend this to test actual HTTP responses if you set up a proper
-  // test server For now, we verify the controller exists and can register
+  // Verify the controller exists and can register
   // routes without throwing
-  auto testServer = httplib::Server();
+  httplib::Server testServer;
   EXPECT_NO_THROW(healthController->registerRoutes(testServer));
 }
 

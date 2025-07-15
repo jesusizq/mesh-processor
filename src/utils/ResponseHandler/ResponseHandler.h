@@ -24,6 +24,9 @@ public:
                         HttpStatus status);
   static void sendEmpty(httplib::Response &res,
                         HttpStatus status = HttpStatus::NO_CONTENT);
+
+private:
+  static void setCorsHeaders(httplib::Response &res);
 };
 
 } // namespace utils

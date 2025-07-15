@@ -8,7 +8,6 @@
 class TriangulationServiceTest : public ::testing::Test {
 protected:
   void SetUp() override {
-    // A simple square polygon
     m_squarePolygon = {{0.0, 0.0}, {1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}};
   }
 
@@ -30,6 +29,6 @@ TEST_F(TriangulationServiceTest,
   }
 
   // Verify we have exactly 2 triangles
-  size_t num_triangles = result.size() / 3;
-  EXPECT_EQ(num_triangles, 2);
+  size_t numTriangles = result.size() / 3;
+  EXPECT_EQ(numTriangles, 2);
 }
