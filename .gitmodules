@@ -1,0 +1,12 @@
+[submodule "libs/libtriangulation"]
+	path = libs/libtriangulation
+	url = git@github.com:jesusizq/libtriangulation.git
+[submodule "libs/spdlog"]
+	path = libs/spdlog
+	url = https://github.com/gabime/spdlog.git
+[submodule "libs/httplib"]
+	path = libs/httplib
+	url = https://github.com/yhirose/cpp-httplib.git
+[submodule "libs/nlohmann"]
+	path = libs/nlohmann
+	url = https://github.com/nlohmann/json.git
