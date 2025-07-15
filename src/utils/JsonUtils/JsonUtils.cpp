@@ -29,17 +29,14 @@ JsonUtils::jsonToPolygon(const nlohmann::json &jsonData) {
 }
 
 nlohmann::json
-JsonUtils::trianglesToJson(const triangulation::Triangles &triangles) {
-  nlohmann::json jsonTriangles;
-  for (const auto &triangle : triangles) {
-    nlohmann::json jsonTriangle;
-    for (const auto &point : triangle) {
-      jsonTriangle.push_back(
-          {triangulation::x(point), triangulation::y(point)});
-    }
-    jsonTriangles.push_back(jsonTriangle);
+JsonUtils::indicesToJson(const triangulation::Indices &indices,
+                         const triangulation::Polygon &originalPolygon) {
+  // Return the indices as a flat array, consistent with WASM output
+  nlohmann::json jsonIndices = nlohmann::json::array();
+  for (const auto &index : indices) {
+    jsonIndices.push_back(index);
   }
-  return jsonTriangles;
+  return jsonIndices;
 }
 
 nlohmann::json JsonUtils::polygonToJson(const triangulation::Polygon &polygon) {
