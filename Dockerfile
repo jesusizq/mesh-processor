@@ -18,9 +18,6 @@ WORKDIR /build
 # Copy source code
 COPY . /build/
 
-# Initialize git submodules
-RUN git submodule update --init --recursive
-
 # Configure and build the project
 RUN mkdir -p build && cd build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DBUILD_SHARED_LIBS=OFF && \
