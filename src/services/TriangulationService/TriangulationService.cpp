@@ -2,7 +2,7 @@
 
 namespace services {
 
-triangulation::Triangles
+triangulation::Indices
 TriangulationService::triangulate(const triangulation::Polygon &polygon) const {
   triangulation::Triangulator triangulator;
   return triangulator.triangulate(polygon);

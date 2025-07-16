@@ -15,6 +15,8 @@ void TriangulationController::registerRoutes(httplib::Server &server) {
               [this](const httplib::Request &req, httplib::Response &res) {
                 this->triangulate(req, res);
               });
+
+  setupCorsOptions(server, "/triangulate");
 }
 
 void TriangulationController::triangulate(const httplib::Request &req,
@@ -24,9 +26,10 @@ void TriangulationController::triangulate(const httplib::Request &req,
     nlohmann::json inputJson = nlohmann::json::parse(req.body);
 
     const auto polygon{utils::JsonUtils::jsonToPolygon(inputJson)};
-    const auto triangles{m_triangulationService->triangulate(polygon)};
+    const auto indices{m_triangulationService->triangulate(polygon)};
 
-    nlohmann::json outputJson = utils::JsonUtils::trianglesToJson(triangles);
+    nlohmann::json outputJson =
+        utils::JsonUtils::indicesToJson(indices, polygon);
 
     spdlog::info("Triangulation was successful");
     utils::ResponseHandler::sendJson(res, outputJson);

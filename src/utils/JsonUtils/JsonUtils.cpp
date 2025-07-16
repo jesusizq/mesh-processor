@@ -9,6 +9,7 @@ JsonUtils::jsonToPolygon(const nlohmann::json &jsonData) {
 
   if (jsonData.is_array()) {
     polygon.reserve(jsonData.size());
+
     for (const auto &item : jsonData) {
       if (item.is_array() && item.size() == 2 && item[0].is_number() &&
           item[1].is_number()) {
@@ -29,17 +30,13 @@ JsonUtils::jsonToPolygon(const nlohmann::json &jsonData) {
 }
 
 nlohmann::json
-JsonUtils::trianglesToJson(const triangulation::Triangles &triangles) {
-  nlohmann::json jsonTriangles;
-  for (const auto &triangle : triangles) {
-    nlohmann::json jsonTriangle;
-    for (const auto &point : triangle) {
-      jsonTriangle.push_back(
-          {triangulation::x(point), triangulation::y(point)});
-    }
-    jsonTriangles.push_back(jsonTriangle);
+JsonUtils::indicesToJson(const triangulation::Indices &indices,
+                         const triangulation::Polygon &originalPolygon) {
+  nlohmann::json jsonIndices;
+  for (const auto &index : indices) {
+    jsonIndices.push_back(index);
   }
-  return jsonTriangles;
+  return jsonIndices;
 }
 
 nlohmann::json JsonUtils::polygonToJson(const triangulation::Polygon &polygon) {

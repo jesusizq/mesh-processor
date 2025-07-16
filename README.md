@@ -1,8 +1,8 @@
 # Mesh Processor
 
-The `mesh-processor` is a high-performance C++ microservice designed to handle heavy geometric processing tasks. Currently, it focuses on triangulating 2D polygons, with a scalable architecture to support additional mesh-related operations in the future.
+The `mesh-processor` is a high-performance C++ microservice designed to handle heavy geometric processing tasks. Currently, it focuses on triangulating 2D polygons using the ear clipping algorithm, with a scalable architecture to support additional mesh-related operations in the future.
 
-It exposes a simple HTTP API to receive polygon data and return the triangulated mesh.
+It exposes a simple HTTP API to receive polygon data and return triangulated indices that can be used for wireframe visualization or mesh rendering.
 
 ## Prerequisites
 
@@ -12,16 +12,11 @@ It exposes a simple HTTP API to receive polygon data and return the triangulated
 - CMake 3.16 or higher
 - Git (for cloning and managing submodules)
 
-### For Docker
-
-- Docker
-- Docker Compose
-
 ## Project Structure
 
 The `mesh-processor` follows a layered architecture for maintainability and scalability:
 
-- **Controllers**: Handle HTTP requests and responses (e.g., `TriangulationController`).
+- **Controllers**: Handle HTTP requests and responses (e.g., `TriangulationController`, `HealthController`).
 - **Services**: Encapsulate business logic (e.g., `TriangulationService`).
 - **Utilities**: Provide common functionality like JSON parsing (`JsonUtils`) and response handling (`ResponseHandler`).
 - **Application**: The `MeshProcessorApp` wires everything together and runs the HTTP server.
@@ -29,9 +24,7 @@ The `mesh-processor` follows a layered architecture for maintainability and scal
 
 ## Build and Run
 
-### Local Development
-
-1. **Clone the repository and initialize submodules:**
+1. **Initialize submodules:**
 
    ```bash
    git submodule update --init --recursive
@@ -57,7 +50,11 @@ The `mesh-processor` follows a layered architecture for maintainability and scal
 
    The server will start on port 8080 by default.
 
-4. **Run Tests (Optional):**
+   ```bash
+   mkdir build && cd build
+   cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+   cmake --build . -j$(nproc)
+   ```
 
    If tests are included, you can run them after building:
 
@@ -66,6 +63,10 @@ The `mesh-processor` follows a layered architecture for maintainability and scal
    ```
 
 ## API Documentation
+
+### `GET /health`
+
+Health check endpoint for monitoring service status.
 
 ### `POST /triangulate`
 
@@ -84,28 +85,3 @@ _Example:_
   [150, 200]
 ]
 ```
-
-**Success Response (200 OK):**
-
-The response is a JSON array of triangles. Each triangle is an array of 3 points, and each point is an array of two numbers `[x, y]`.
-
-_Example:_
-
-```json
-[
-  [
-    [100, 100],
-    [200, 100],
-    [150, 200]
-  ]
-]
-```
-
-**Error Responses:**
-
-- `400 Bad Request`: If the request body is not valid JSON or the polygon data is malformed.
-- `500 Internal Server Error`: If an error occurs during the triangulation process.
-
-## Future Enhancements
-
-The architecture is designed to easily accommodate additional endpoints for other mesh processing tasks. New services and controllers can be added without modifying the core application structure.

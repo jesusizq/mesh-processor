@@ -10,7 +10,7 @@ public:
   TriangulationService() = default;
   virtual ~TriangulationService() = default;
 
-  virtual triangulation::Triangles
+  virtual triangulation::Indices
   triangulate(const triangulation::Polygon &polygon) const;
 };
 

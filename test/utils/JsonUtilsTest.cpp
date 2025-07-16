@@ -15,31 +15,22 @@ protected:
     m_squareJson.push_back({1.0, 1.0});
     m_squareJson.push_back({0.0, 1.0});
 
-    // Simple triangulation result (two triangles from the square)
-    m_triangulationResult = {{{0.0, 0.0}, {1.0, 0.0}, {1.0, 1.0}},
-                             {{0.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}}};
+    // Indices for triangulation (two triangles from the square)
+    // Triangle 1: indices 0, 1, 2 -> points (0,0), (1,0), (1,1)
+    // Triangle 2: indices 0, 2, 3 -> points (0,0), (1,1), (0,1)
+    m_triangulationIndices = {0, 1, 2, 0, 2, 3};
 
-    m_triangulationJson = nlohmann::json::array();
-    m_triangulationJson.push_back(
-        createTriangleJson({{{0.0, 0.0}, {1.0, 0.0}, {1.0, 1.0}}}));
-    m_triangulationJson.push_back(
-        createTriangleJson({{{0.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}}}));
+    // Expected JSON should now be a flat array of indices
+    m_expectedTriangulationJson = nlohmann::json::array();
+    for (const auto &index : m_triangulationIndices) {
+      m_expectedTriangulationJson.push_back(index);
+    }
   }
-
-  // JSON representation of the triangulation
-  nlohmann::json
-  createTriangleJson(const std::array<std::array<double, 2>, 3> &triangle) {
-    nlohmann::json triangleJson;
-    triangleJson.push_back({triangle[0][0], triangle[0][1]});
-    triangleJson.push_back({triangle[1][0], triangle[1][1]});
-    triangleJson.push_back({triangle[2][0], triangle[2][1]});
-    return triangleJson;
-  };
 
   triangulation::Polygon m_squarePolygon;
   nlohmann::json m_squareJson;
-  triangulation::Triangles m_triangulationResult;
-  nlohmann::json m_triangulationJson;
+  triangulation::Indices m_triangulationIndices;
+  nlohmann::json m_expectedTriangulationJson;
 };
 
 TEST_F(JsonUtilsTest, JsonToPolygon_ValidInput_ReturnsCorrectPolygon) {
@@ -62,16 +53,13 @@ TEST_F(JsonUtilsTest, PolygonToJson_ValidPolygon_ReturnsCorrectJson) {
   }
 }
 
-TEST_F(JsonUtilsTest, TrianglesToJson_ValidTriangles_ReturnsCorrectJson) {
-  auto result = utils::JsonUtils::trianglesToJson(m_triangulationResult);
-  EXPECT_EQ(result.size(), m_triangulationJson.size());
+TEST_F(JsonUtilsTest, IndicesToJson_ValidIndices_ReturnsCorrectJson) {
+  auto result =
+      utils::JsonUtils::indicesToJson(m_triangulationIndices, m_squarePolygon);
+  EXPECT_EQ(result.size(), m_expectedTriangulationJson.size());
 
+  // Now comparing flat arrays of indices
   for (size_t i = 0; i < result.size(); ++i) {
-    EXPECT_EQ(result[i].size(), m_triangulationJson[i].size());
-
-    for (size_t j = 0; j < result[i].size(); ++j) {
-      EXPECT_EQ(result[i][j][0], m_triangulationJson[i][j][0]);
-      EXPECT_EQ(result[i][j][1], m_triangulationJson[i][j][1]);
-    }
+    EXPECT_EQ(result[i], m_expectedTriangulationJson[i]);
   }
 }

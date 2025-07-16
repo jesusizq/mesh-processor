@@ -5,4 +5,5 @@ target_include_directories(ControllerInterfaces INTERFACE
 )
 
 target_link_libraries(ControllerInterfaces INTERFACE httplib)
-add_subdirectory(TriangulationController) 
+add_subdirectory(TriangulationController)
+add_subdirectory(HealthController) 

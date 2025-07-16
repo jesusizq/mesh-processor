@@ -12,6 +12,7 @@ target_link_libraries(MeshProcessorTests PRIVATE
     MeshProcessorTestSources
     MeshProcessorApp
     TriangulationController
+    HealthController
     TriangulationService
     JsonUtils
     ResponseHandler

@@ -13,7 +13,8 @@ public:
   static nlohmann::json polygonToJson(const triangulation::Polygon &polygon);
 
   static nlohmann::json
-  trianglesToJson(const triangulation::Triangles &triangles);
+  indicesToJson(const triangulation::Indices &indices,
+                const triangulation::Polygon &originalPolygon);
 };
 
 } // namespace utils
