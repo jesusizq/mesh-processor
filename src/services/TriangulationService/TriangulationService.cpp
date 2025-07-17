@@ -2,10 +2,12 @@
 
 namespace services {
 
-triangulation::Indices
-TriangulationService::triangulate(const triangulation::Polygon &polygon) const {
+TriangulationResult TriangulationService::triangulateWithVertices(
+    const triangulation::Polygon &polygon) const {
   triangulation::Triangulator triangulator;
-  return triangulator.triangulate(polygon);
+  TriangulationResult result;
+  result.indices = triangulator.triangulate(polygon, result.vertices);
+  return result;
 }
 
 } // namespace services

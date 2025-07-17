@@ -1,8 +1,16 @@
 # Mesh Processor
 
-The `mesh-processor` is a high-performance C++ microservice designed to handle heavy geometric processing tasks. Currently, it focuses on triangulating 2D polygons using the ear clipping algorithm, with a scalable architecture to support additional mesh-related operations in the future.
+The `mesh-processor` is a high-performance C++ microservice designed to handle heavy geometric processing tasks. Currently, it focuses on triangulating 2D polygons with **advanced self-intersection handling**, using a combination of the Clipper2 library for intersection resolution and the ear clipping algorithm for triangulation.
 
-It exposes a simple HTTP API to receive polygon data and return triangulated indices that can be used for wireframe visualization or mesh rendering.
+It exposes a simple HTTP API to receive polygon data and return both resolved vertices and triangulated indices that can be used for wireframe visualization or mesh rendering.
+
+## Features
+
+- **Self-Intersecting Polygon Support**: Automatically detects and resolves self-intersections using Clipper2
+- **High-Performance Triangulation**: Uses the optimized ear clipping algorithm for simple polygons
+- **Robust Architecture**: Layered design with clear separation of concerns
+- **Comprehensive API**: Returns both resolved vertices and triangle indices
+- **Fully Tested**: Comprehensive test suite with CI/CD integration
 
 ## Prerequisites
 
@@ -20,7 +28,12 @@ The `mesh-processor` follows a layered architecture for maintainability and scal
 - **Services**: Encapsulate business logic (e.g., `TriangulationService`).
 - **Utilities**: Provide common functionality like JSON parsing (`JsonUtils`) and response handling (`ResponseHandler`).
 - **Application**: The `MeshProcessorApp` wires everything together and runs the HTTP server.
-- **External Libraries**: Includes `libtriangulation` (for core geometry operations), `cpp-httplib` (HTTP server), `nlohmann/json` (JSON parsing), and `spdlog` (logging).
+- **External Libraries**:
+  - `libtriangulation` (core geometry operations with self-intersection support)
+  - `Clipper2` (intersection resolution for self-intersecting polygons)
+  - `cpp-httplib` (HTTP server)
+  - `nlohmann/json` (JSON parsing)
+  - `spdlog` (logging)
 
 ## Build and Run
 

@@ -1,6 +1,7 @@
 #ifndef MESH_PROCESSOR_JSON_UTILS_H
 #define MESH_PROCESSOR_JSON_UTILS_H
 
+#include "TriangulationService.h"
 #include "nlohmann/json.hpp"
 #include "triangulation.h"
 
@@ -15,6 +16,9 @@ public:
   static nlohmann::json
   indicesToJson(const triangulation::Indices &indices,
                 const triangulation::Polygon &originalPolygon);
+
+  static nlohmann::json
+  triangulationResultToJson(const services::TriangulationResult &result);
 };
 
 } // namespace utils

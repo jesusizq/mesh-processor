@@ -11,4 +11,5 @@ target_link_libraries(JsonUtils PUBLIC
     nlohmann_json
     libtriangulation
     spdlog::spdlog
+    TriangulationService
 ) 

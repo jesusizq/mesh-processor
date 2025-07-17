@@ -26,10 +26,10 @@ void TriangulationController::triangulate(const httplib::Request &req,
     nlohmann::json inputJson = nlohmann::json::parse(req.body);
 
     const auto polygon{utils::JsonUtils::jsonToPolygon(inputJson)};
-    const auto indices{m_triangulationService->triangulate(polygon)};
+    const auto result{m_triangulationService->triangulateWithVertices(polygon)};
 
     nlohmann::json outputJson =
-        utils::JsonUtils::indicesToJson(indices, polygon);
+        utils::JsonUtils::triangulationResultToJson(result);
 
     spdlog::info("Triangulation was successful");
     utils::ResponseHandler::sendJson(res, outputJson);

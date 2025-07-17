@@ -5,13 +5,18 @@
 
 namespace services {
 
+struct TriangulationResult {
+  triangulation::Polygon vertices;
+  triangulation::Indices indices;
+};
+
 class TriangulationService {
 public:
   TriangulationService() = default;
   virtual ~TriangulationService() = default;
 
-  virtual triangulation::Indices
-  triangulate(const triangulation::Polygon &polygon) const;
+  virtual TriangulationResult
+  triangulateWithVertices(const triangulation::Polygon &polygon) const;
 };
 
 } // namespace services

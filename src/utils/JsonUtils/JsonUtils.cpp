@@ -47,4 +47,21 @@ nlohmann::json JsonUtils::polygonToJson(const triangulation::Polygon &polygon) {
   return jsonPolygon;
 }
 
+nlohmann::json JsonUtils::triangulationResultToJson(
+    const services::TriangulationResult &result) {
+  nlohmann::json jsonResult;
+
+  // Convert vertices to JSON array
+  jsonResult["vertices"] = polygonToJson(result.vertices);
+
+  // Convert indices to JSON array
+  nlohmann::json jsonIndices;
+  for (const auto &index : result.indices) {
+    jsonIndices.push_back(index);
+  }
+  jsonResult["indices"] = jsonIndices;
+
+  return jsonResult;
+}
+
 } // namespace utils
