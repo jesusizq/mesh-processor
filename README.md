@@ -1,100 +1,120 @@
-# Mesh Processor
+# 🔷 Mesh Processor (C++ Microservice)
 
-The `mesh-processor` is a high-performance C++ microservice designed to handle heavy geometric processing tasks. Currently, it focuses on triangulating 2D polygons with **advanced self-intersection handling**, using a combination of the Clipper2 library for intersection resolution and the ear clipping algorithm for triangulation.
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
+![C++ Standard](https://img.shields.io/badge/C%2B%2B-17-blue.svg?logo=c%2B%2B)
+![Docker](https://img.shields.io/badge/Docker-Multi--Stage-2496ED?logo=docker)
+![Architecture](https://img.shields.io/badge/Architecture-Layered-orange)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-It exposes a simple HTTP API to receive polygon data and return both resolved vertices and triangulated indices that can be used for wireframe visualization or mesh rendering.
+**A high-performance, stateless C++ microservice for complex 2D geometric processing.**
 
-## Features
+This service acts as the computational backend for the [2D Polygon Triangulator](../README.md). It handles complex polygon triangulation operations, specifically optimizing for **self-intersecting polygons** using the `Clipper2` library and `ear-clipping` algorithms.
 
-- **Self-Intersecting Polygon Support**: Automatically detects and resolves self-intersections using Clipper2
-- **High-Performance Triangulation**: Uses the optimized ear clipping algorithm for simple polygons
-- **Robust Architecture**: Layered design with clear separation of concerns
-- **Comprehensive API**: Returns both resolved vertices and triangle indices
-- **Fully Tested**: Comprehensive test suite with CI/CD integration
+## 🚀 Key Features
 
-## Prerequisites
+- **Robust Geometry Engine**: Automatically detects and resolves self-intersecting polygons (via `Clipper2`) before triangulation.
+- **High Performance**: Optimized C++17 implementation using `mapbox/earcut` (O(n)) for mesh generation.
+- **Clean Architecture**: Implements **Controller-Service-Repository** pattern with Dependency Injection for testability.
+- **Production Ready**:
+  - **Dockerized**: Multi-stage builds (Builder → Test → Runtime) producing a minimal footprint image.
+  - **Observability**: Structured logging via `spdlog`.
+  - **Resilience**: Graceful error handling and input validation.
 
-### For Local Build
+## 🛠️ Tech Stack
 
-- C++17 compatible compiler (e.g., GCC, Clang)
-- CMake 3.16 or higher
-- Git (for cloning and managing submodules)
+| Component         | Technology            | Description                                  |
+| :---------------- | :-------------------- | :------------------------------------------- |
+| **Language**      | **C++17**             | Core logic and memory management             |
+| **API**           | `cpp-httplib`         | Lightweight, multi-threaded REST HTTP server |
+| **Geometry**      | `Clipper2` / `EarCut` | Intersection resolution & Triangulation      |
+| **Serialization** | `nlohmann/json`       | Modern JSON parsing and generation           |
+| **Testing**       | **GoogleTest**        | Unit and Integration testing suite           |
+| **DevOps**        | Docker / CMake        | Multi-stage container builds                 |
 
-## Project Structure
+## 🏗️ Architecture
 
-The `mesh-processor` follows a layered architecture for maintainability and scalability:
+The application follows a strict layered architecture to separate concerns and ensure maintainability:
 
-- **Controllers**: Handle HTTP requests and responses (e.g., `TriangulationController`, `HealthController`).
-- **Services**: Encapsulate business logic (e.g., `TriangulationService`).
-- **Utilities**: Provide common functionality like JSON parsing (`JsonUtils`) and response handling (`ResponseHandler`).
-- **Application**: The `MeshProcessorApp` wires everything together and runs the HTTP server.
-- **External Libraries**:
-  - `libtriangulation` (core geometry operations with self-intersection support)
-  - `Clipper2` (intersection resolution for self-intersecting polygons)
-  - `cpp-httplib` (HTTP server)
-  - `nlohmann/json` (JSON parsing)
-  - `spdlog` (logging)
+```mermaid
+graph LR
+    Client[HTTP Client] -->|POST /triangulate| Controller[TriangulationController]
+    Controller -->|DTOs| Service[TriangulationService]
+    Service -->|Polygon| Lib[LibTriangulation]
+    Lib -->|Clipper2| Clean[Clean Polygon]
+    Clean -->|Earcut| Mesh[Triangulated Mesh]
+    Mesh -->|Indices| Service
+    Service -->|JSON| Controller
+    Controller -->|Response| Client
+```
 
-## Build and Run
+## ⚡ Quick Start
 
-1. **Initialize submodules:**
+### Using Docker (Recommended)
 
-   ```bash
-   git submodule update --init --recursive
-   ```
+Get the service running in under 2 minutes. This automatically runs the test suite during the build process to ensure integrity.
 
-2. **Configure and build the project:**
+```bash
+# Build the optimized runtime image
+docker build -t mesh-processor .
 
-   ```bash
-   mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release && cmake --build . -j$(nproc)
-   ```
+# Run the container on port 8080
+docker run -p 8080:8080 mesh-processor
+```
 
-   If you want to build tests, you can use the following command:
+### Local Development
 
-   ```bash
-   cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON && cmake --build . -j$(nproc)
-   ```
+Prerequisites: `CMake 3.16+`, `C++17 Compiler`, `Git`.
 
-3. **Run the service:**
+```bash
+# 1. Clone & Init Submodules
+git submodule update --init --recursive
 
-   ```bash
-   ./app/MeshProcessor
-   ```
+# 2. Build & Run
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+cmake --build . -j$(nproc)
+./app/MeshProcessor
+```
 
-   The server will start on port 8080 by default.
-
-   ```bash
-   mkdir build && cd build
-   cmake .. -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
-   cmake --build . -j$(nproc)
-   ```
-
-   If tests are included, you can run them after building:
-
-   ```bash
-   ctest --output-on-failure
-   ```
-
-## API Documentation
-
-### `GET /health`
-
-Health check endpoint for monitoring service status.
+## 🔌 API Reference
 
 ### `POST /triangulate`
 
-This endpoint accepts a JSON array of 2D points that define a polygon and returns a triangulated version of that polygon.
+Accepts a 2D polygon (ordered array of points) and returns the triangulated mesh indices.
 
-**Request Body:**
+**Request:**
 
-The request body must be a JSON array of points. Each point is represented as an array of two numbers `[x, y]`.
+```bash
+curl -X POST http://localhost:8080/triangulate \
+  -H "Content-Type: application/json" \
+  -d '[
+    [100, 100],
+    [200, 100],
+    [200, 200],
+    [100, 200]
+  ]'
+```
 
-_Example:_
+**Response:**
 
 ```json
-[
-  [100, 100],
-  [200, 100],
-  [150, 200]
-]
+{
+  "vertices": [
+    [100, 100],
+    [200, 100],
+    [200, 200],
+    [100, 200]
+  ],
+  "indices": [0, 1, 2, 0, 2, 3]
+}
+```
+
+## 🧪 Testing
+
+The project uses **GoogleTest** for unit and integration testing. You can run tests inside an isolated Docker environment:
+
+```bash
+# Run tests using the intermediate Docker stage
+docker build --target test -t mesh-processor-test .
+docker run -it --rm mesh-processor-test
 ```
