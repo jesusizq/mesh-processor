@@ -16,7 +16,8 @@ This service acts as the computational backend for the [2D Polygon Triangulator]
 - **High Performance**: Optimized C++17 implementation using `mapbox/earcut` (O(n)) for mesh generation.
 - **Clean Architecture**: Implements **Controller-Service-Repository** pattern with Dependency Injection for testability.
 - **Production Ready**:
-  - **Dockerized**: Multi-stage builds (Builder → Test → Runtime) producing a minimal footprint image.
+  - **Dockerized**: Multi-stage builds producing a minimal footprint image.
+  - **Secure**: Network isolation via reverse proxy (Caddy/Nginx).
   - **Observability**: Structured logging via `spdlog`.
   - **Resilience**: Graceful error handling and input validation.
 
